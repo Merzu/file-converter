@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="et">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KONVERT — failimuundur</title>
+  <title>KONVERT — File Converter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -11,7 +11,7 @@
       --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
       --text: #f0f0f0; --muted: #666; --accent: #c8f542;
       --accent-dim: rgba(200,245,66,0.08); --warn: #f5a623;
-      --blue: #64b4ff; --purple: #c864ff;
+      --blue: #64b4ff; --purple: #c864ff; --red: #ff5a5a;
       --radius: 6px;
       --font-display: 'Syne', sans-serif;
       --font-mono: 'DM Mono', monospace;
@@ -19,20 +19,25 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; flex-direction: column; }
 
+    /* HEADER */
     header { padding: 2rem 3rem; display: flex; align-items: baseline; gap: 1.5rem; border-bottom: 1px solid var(--border); }
     header h1 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 800; letter-spacing: 0.08em; color: var(--accent); }
     header span { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
 
+    /* MAIN */
     main { flex: 1; max-width: 820px; width: 100%; margin: 0 auto; padding: 3rem 2rem 4rem; display: flex; flex-direction: column; gap: 2.5rem; }
 
+    /* DROP ZONE */
     #dropzone { border: 1px dashed var(--border); border-radius: var(--radius); padding: 3.5rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
     #dropzone:hover, #dropzone.dragging { border-color: var(--accent); background: var(--accent-dim); }
     #dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .drop-icon { font-size: 2rem; margin-bottom: 1rem; opacity: 0.5; }
-    .drop-label { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
-    .drop-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.03em; line-height: 2; }
+    .drop-icon { font-size: 2rem; margin-bottom: 1rem; opacity: 0.45; }
+    .drop-label { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+    .drop-sub { font-size: 0.71rem; color: var(--muted); letter-spacing: 0.03em; line-height: 2.1; }
     .drop-sub strong { color: var(--warn); font-weight: 500; }
+    .drop-sub em { color: var(--blue); font-style: normal; }
 
+    /* FILE LIST */
     #file-list { display: flex; flex-direction: column; gap: 0.75rem; }
     .file-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 1rem; animation: fadeIn 0.2s ease; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
@@ -40,108 +45,145 @@
     .file-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
     .file-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .file-meta { font-size: 0.68rem; color: var(--muted); }
-    .file-tag { flex-shrink: 0; font-size: 0.58rem; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .tag-raw { background: rgba(245,166,35,0.12); color: var(--warn); border: 1px solid rgba(245,166,35,0.25); }
-    .tag-img { background: rgba(200,245,66,0.1); color: var(--accent); border: 1px solid rgba(200,245,66,0.2); }
-    .tag-data { background: rgba(100,180,255,0.1); color: var(--blue); border: 1px solid rgba(100,180,255,0.2); }
-    .tag-txt { background: rgba(200,200,200,0.08); color: #aaa; border: 1px solid #333; }
+    .file-tag { flex-shrink: 0; font-size: 0.57rem; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .tag-raw  { background: rgba(245,166,35,0.12); color: var(--warn);   border: 1px solid rgba(245,166,35,0.25); }
+    .tag-img  { background: rgba(200,245,66,0.10); color: var(--accent); border: 1px solid rgba(200,245,66,0.22); }
+    .tag-pdf  { background: rgba(255,90,90,0.10);  color: var(--red);    border: 1px solid rgba(255,90,90,0.22); }
+    .tag-data { background: rgba(100,180,255,0.10);color: var(--blue);   border: 1px solid rgba(100,180,255,0.22); }
+    .tag-txt  { background: rgba(200,200,200,0.07);color: #aaa;          border: 1px solid #333; }
 
-    .format-select { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.45rem 0.75rem; cursor: pointer; outline: none; transition: border-color 0.15s; min-width: 115px; }
+    .format-select { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.45rem 0.75rem; cursor: pointer; outline: none; transition: border-color 0.15s; min-width: 120px; }
     .format-select:focus { border-color: var(--accent); }
     .btn-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0.25rem 0.5rem; transition: color 0.15s; }
-    .btn-remove:hover { color: #ff5a5a; }
+    .btn-remove:hover { color: var(--red); }
+
     .file-status { grid-column: 1/-1; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; display: none; }
     .file-status.active { display: block; }
     .file-status-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; }
-    .file-err { grid-column: 1/-1; font-size: 0.65rem; color: #ff5a5a; display: none; line-height: 1.5; }
+    .file-err { grid-column: 1/-1; font-size: 0.65rem; color: var(--red); display: none; line-height: 1.5; margin-top: 0.2rem; }
     .file-err.show { display: block; }
 
+    /* ACTIONS */
     .actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
     .btn-primary { background: var(--accent); color: #0d0d0d; border: none; border-radius: var(--radius); font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; padding: 0.75rem 1.75rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
     .btn-primary:hover { opacity: 0.88; } .btn-primary:active { transform: scale(0.98); } .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
     .btn-ghost { background: none; border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.72rem 1.25rem; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
     .btn-ghost:hover { border-color: var(--text); color: var(--text); }
-
     #log { font-size: 0.7rem; color: var(--muted); min-height: 1.2em; }
-    #log .ok { color: var(--accent); } #log .err { color: #ff5a5a; }
+    #log .ok  { color: var(--accent); }
+    #log .err { color: var(--red); }
 
-    .notice { background: rgba(245,166,35,0.06); border: 1px solid rgba(245,166,35,0.18); border-radius: var(--radius); padding: 0.85rem 1.1rem; font-size: 0.7rem; color: var(--warn); line-height: 1.65; }
+    /* NOTICE */
+    .notice { border-radius: var(--radius); padding: 0.85rem 1.1rem; font-size: 0.7rem; line-height: 1.65; }
+    .notice-warn { background: rgba(245,166,35,0.06); border: 1px solid rgba(245,166,35,0.18); color: var(--warn); }
+    .notice-blue { background: rgba(100,180,255,0.05); border: 1px solid rgba(100,180,255,0.15); color: var(--blue); }
 
+    /* FORMATS GRID */
     .formats-section h2 { font-family: var(--font-display); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
-    .formats-info { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.25rem 1.5rem; }
+    .formats-info { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1.25rem 1.5rem; }
     .fmt-group h3 { font-family: var(--font-display); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .fmt-group.raw h3 { color: var(--warn); } .fmt-group.img h3 { color: var(--accent); }
-    .fmt-group.data h3 { color: var(--blue); } .fmt-group.txt h3 { color: #aaa; }
+    .fmt-group.raw  h3 { color: var(--warn); }
+    .fmt-group.img  h3 { color: var(--accent); }
+    .fmt-group.pdf  h3 { color: var(--red); }
+    .fmt-group.data h3 { color: var(--blue); }
+    .fmt-group.txt  h3 { color: #aaa; }
     .fmt-group p { font-size: 0.66rem; color: var(--muted); line-height: 1.85; }
 
+    /* FOOTER */
     footer { padding: 1.5rem 3rem; border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.04em; display: flex; justify-content: space-between; }
 
-    /* Loading overlay */
-    #raw-loading { display: none; position: fixed; inset: 0; background: rgba(13,13,13,0.88); z-index: 99; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; font-size: 0.75rem; color: var(--muted); }
-    #raw-loading.show { display: flex; }
+    /* LOADING OVERLAY */
+    #lib-loading { display: none; position: fixed; inset: 0; background: rgba(13,13,13,0.90); z-index: 99; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; font-size: 0.75rem; color: var(--muted); }
+    #lib-loading.show { display: flex; }
     .spinner { width: 26px; height: 26px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* PDF OPTION */
+    .pdf-opts { grid-column: 1/-1; display: none; gap: 0.75rem; align-items: center; font-size: 0.7rem; color: var(--muted); flex-wrap: wrap; }
+    .pdf-opts.show { display: flex; }
+    .pdf-opts label { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+    .pdf-opts select { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font-mono); font-size: 0.7rem; padding: 0.3rem 0.6rem; outline: none; cursor: pointer; }
+    .pdf-opts select:focus { border-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      header { padding: 1.25rem 1.25rem; }
+      main { padding: 2rem 1rem 3rem; }
+      footer { padding: 1rem 1.25rem; flex-direction: column; gap: 0.25rem; }
+    }
   </style>
 </head>
 <body>
 
-<div id="raw-loading">
+<div id="lib-loading">
   <div class="spinner"></div>
-  <span id="raw-loading-text">Laadin RAW decoder...</span>
+  <span id="lib-loading-text">Loading library...</span>
 </div>
 
 <header>
   <h1>KONVERT</h1>
-  <span>// failimuundur · 30+ formaati · 100% brauseris</span>
+  <span>// file converter · 35+ formats · runs entirely in your browser</span>
 </header>
 
 <main>
 
+  <!-- DROP ZONE -->
   <div id="dropzone">
     <input type="file" id="file-input" multiple accept="*/*" />
     <div class="drop-icon">⬡</div>
-    <div class="drop-label">Lohista failid siia või klõpsa valimiseks</div>
+    <div class="drop-label">Drop files here or click to browse</div>
     <div class="drop-sub">
-      <strong>RAW:</strong> NEF · CR2 · CR3 · ARW · DNG · ORF · RW2 · RAF · PEF · SRW · 3FR · MRW<br>
-      Pildid: JPG · PNG · WEBP · GIF · BMP · TIFF · SVG · ICO · AVIF<br>
-      Andmed: CSV · JSON · XML · YAML · TSV · INI &nbsp;·&nbsp; Tekst: TXT · MD · HTML · RTF
+      <strong>RAW camera:</strong> NEF · CR2 · CR3 · ARW · DNG · ORF · RW2 · RAF · PEF · SRW · 3FR · MRW<br>
+      <em>PDF:</em> PDF → PNG / JPG / TXT &nbsp;·&nbsp; Images / Text → PDF<br>
+      Images: JPG · PNG · WEBP · GIF · BMP · TIFF · SVG · ICO · AVIF<br>
+      Data: CSV · JSON · XML · YAML · TSV · INI &nbsp;·&nbsp; Text: TXT · MD · HTML · RTF
     </div>
   </div>
 
+  <!-- FILE LIST -->
   <div id="file-list"></div>
 
+  <!-- ACTIONS -->
   <div class="actions" id="actions" style="display:none">
-    <button class="btn-primary" id="btn-convert">Konverteeri kõik</button>
-    <button class="btn-ghost" id="btn-clear">Tühjenda</button>
+    <button class="btn-primary" id="btn-convert">Convert all</button>
+    <button class="btn-ghost" id="btn-clear">Clear</button>
     <span id="log"></span>
   </div>
 
-  <div class="notice" id="raw-notice" style="display:none">
-    ⚠ <strong>RAW failide</strong> (NEF, CR2, ARW jne) töötlus kasutab <strong>dcraw.js WebAssembly</strong> — päris kaamera RAW dekoodereid. Esimene laadimine ~3–5 sek. Suurtel failidel (30+ MP) kuni 30 sek oote.
+  <!-- NOTICES -->
+  <div class="notice notice-warn" id="raw-notice" style="display:none">
+    ⚠ <strong>RAW files</strong> (NEF, CR2, ARW etc.) are decoded using <strong>dcraw.js WebAssembly</strong> — the standard open-source RAW decoder. First load takes ~3–5 seconds. Large files (30+ MP) may take up to 30 seconds.
+  </div>
+  <div class="notice notice-blue" id="pdf-notice" style="display:none">
+    ℹ <strong>PDF conversion</strong> uses PDF.js (Mozilla) for PDF → image/text, and jsPDF for creating PDFs. All processing happens locally — no uploads.
   </div>
 
+  <!-- FORMATS TABLE -->
   <div class="formats-section">
-    <h2>Toetatud konversioonid</h2>
+    <h2>Supported conversions</h2>
     <div class="formats-info">
+      <div class="fmt-group pdf">
+        <h3>PDF</h3>
+        <p>PDF → PNG (each page)<br>PDF → JPG (each page)<br>PDF → TXT (extract text)<br>PDF → WEBP<br><br>JPG → PDF<br>PNG → PDF<br>WEBP → PDF<br>TXT → PDF<br>MD → PDF<br>HTML → PDF</p>
+      </div>
       <div class="fmt-group raw">
-        <h3>RAW kaamera → PNG/JPG</h3>
-        <p>NEF · NRW (Nikon)<br>CR2 · CR3 (Canon)<br>ARW · SRF (Sony)<br>DNG (Adobe/Leica/GoPro)<br>ORF (Olympus)<br>RW2 (Panasonic)<br>RAF (Fujifilm)<br>PEF (Pentax)<br>SRW (Samsung)<br>3FR (Hasselblad)<br>MRW (Konica-Minolta)<br>ERF · X3F · RW1</p>
+        <h3>RAW Camera → PNG/JPG</h3>
+        <p>NEF · NRW (Nikon)<br>CR2 · CR3 (Canon)<br>ARW · SRF (Sony)<br>DNG (Adobe/Leica)<br>ORF (Olympus)<br>RW2 (Panasonic)<br>RAF (Fujifilm)<br>PEF (Pentax)<br>SRW (Samsung)<br>3FR (Hasselblad)<br>MRW (Konica)<br>ERF · X3F</p>
       </div>
       <div class="fmt-group img">
-        <h3>Standardpildid</h3>
-        <p>JPG ↔ PNG · WEBP · BMP · GIF<br>PNG ↔ JPG · WEBP · GIF · BMP<br>WEBP ↔ PNG · JPG · GIF<br>GIF → PNG · JPG · WEBP<br>BMP → PNG · JPG · WEBP<br>TIFF → PNG · JPG · WEBP<br>SVG → PNG · JPG<br>ICO → PNG<br>AVIF → PNG · JPG · WEBP</p>
+        <h3>Images</h3>
+        <p>JPG ↔ PNG · WEBP · BMP · GIF<br>PNG ↔ JPG · WEBP · GIF · BMP<br>WEBP ↔ PNG · JPG · GIF<br>GIF → PNG · JPG · WEBP<br>BMP → PNG · JPG · WEBP<br>TIFF → PNG · JPG · WEBP<br>SVG → PNG · JPG<br>ICO → PNG<br>AVIF → PNG · JPG</p>
       </div>
       <div class="fmt-group data">
-        <h3>Andmefailid</h3>
+        <h3>Data formats</h3>
         <p>CSV ↔ JSON · TSV · XML<br>JSON ↔ CSV · YAML · XML<br>XML ↔ JSON · TXT<br>YAML → JSON · TXT<br>TSV ↔ CSV · JSON<br>INI → JSON</p>
       </div>
       <div class="fmt-group txt">
-        <h3>Tekst / Märgistus</h3>
-        <p>MD → HTML<br>HTML → TXT · MD (rough)<br>RTF → TXT<br>TXT → JSON · MD<br>XML → TXT</p>
+        <h3>Text / Markup</h3>
+        <p>MD → HTML · PDF<br>HTML → TXT · MD<br>RTF → TXT<br>TXT → JSON · MD · PDF<br>XML → TXT</p>
       </div>
       <div class="fmt-group">
-        <h3>Info</h3>
-        <p style="color:var(--muted)">Kõik konversioonid toimuvad <em>täielikult sinu brauseris</em>.<br><br>Failid ei lahku arvutist.<br><br>RAW: kasutatakse dcraw WebAssembly-t täpse värvitöötlusega.</p>
+        <h3>Privacy</h3>
+        <p style="color:var(--muted)">Everything runs <em>100% in your browser</em> using WebAssembly and the Canvas API.<br><br>No files are ever uploaded to any server.</p>
       </div>
     </div>
   </div>
@@ -149,20 +191,27 @@
 </main>
 
 <footer>
-  <span>WebAssembly + Canvas API · privaatsus garanteeritud</span>
-  <span>KONVERT v2.0</span>
+  <span>WebAssembly · PDF.js · jsPDF · dcraw · Canvas API</span>
+  <span>KONVERT v3.0</span>
 </footer>
 
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- LIBRARIES (loaded on demand)                               -->
+<!-- PDF.js for PDF reading, jsPDF for PDF writing              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
-// ══════════════════════════════════════════════════════════════
-//  MAPS
-// ══════════════════════════════════════════════════════════════
+'use strict';
+
+// ─────────────────────────────────────────────
+//  MIME / EXTENSION MAPS
+// ─────────────────────────────────────────────
 const MIME_TO_EXT = {
   'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif',
   'image/bmp':'bmp','image/svg+xml':'svg','image/tiff':'tiff','image/avif':'avif',
+  'application/pdf':'pdf',
   'text/plain':'txt','application/json':'json','text/csv':'csv',
   'text/html':'html','text/xml':'xml','application/xml':'xml',
-  'text/markdown':'html','text/yaml':'yaml','application/yaml':'yaml',
+  'text/markdown':'html','text/yaml':'yaml',
   'text/tab-separated-values':'tsv','text/x-ini':'json',
 };
 
@@ -172,6 +221,7 @@ const EXT_TO_MIME = {
   jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',
   gif:'image/gif',bmp:'image/bmp',svg:'image/svg+xml',
   tif:'image/tiff',tiff:'image/tiff',avif:'image/avif',ico:'image/x-icon',
+  pdf:'application/pdf',
   txt:'text/plain',json:'application/json',csv:'text/csv',
   xml:'text/xml',html:'text/html',htm:'text/html',
   md:'text/markdown',markdown:'text/markdown',
@@ -186,371 +236,559 @@ function getMime(file) {
   return EXT_TO_MIME[ext] || 'application/octet-stream';
 }
 const isRaw = m => m.startsWith('image/x-raw-');
+const isPdf = m => m === 'application/pdf';
 
-const RASTER = [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'},{val:'image/bmp',label:'BMP'}];
+// ─────────────────────────────────────────────
+//  FORMAT OPTIONS
+// ─────────────────────────────────────────────
+const RASTER = [
+  {val:'image/png',  label:'PNG'},
+  {val:'image/jpeg', label:'JPG'},
+  {val:'image/webp', label:'WEBP'},
+  {val:'image/bmp',  label:'BMP'},
+];
 
 const FORMAT_OPTIONS = {
-  'image/jpeg':  [{val:'image/png',label:'PNG'},{val:'image/webp',label:'WEBP'},{val:'image/bmp',label:'BMP'},{val:'image/gif',label:'GIF'}],
-  'image/png':   [{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'},{val:'image/gif',label:'GIF'},{val:'image/bmp',label:'BMP'}],
-  'image/webp':  [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/gif',label:'GIF'}],
-  'image/gif':   [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
-  'image/bmp':   [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
-  'image/tiff':  [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
-  'image/svg+xml': [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'}],
-  'image/x-icon': [{val:'image/png',label:'PNG'}],
-  'image/avif':  [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
-  'text/plain':  [{val:'application/json',label:'JSON'},{val:'text/markdown',label:'MD'},{val:'text/plain',label:'TXT'}],
-  'text/csv':    [{val:'application/json',label:'JSON'},{val:'text/tab-separated-values',label:'TSV'},{val:'text/xml',label:'XML'},{val:'text/plain',label:'TXT'}],
-  'application/json': [{val:'text/csv',label:'CSV'},{val:'text/yaml',label:'YAML'},{val:'text/xml',label:'XML'},{val:'text/plain',label:'TXT'}],
-  'text/xml':    [{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
-  'application/xml': [{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
-  'text/yaml':   [{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
-  'text/tab-separated-values': [{val:'text/csv',label:'CSV'},{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
-  'text/x-ini':  [{val:'application/json',label:'JSON'}],
-  'text/markdown': [{val:'text/html',label:'HTML'}],
-  'text/html':   [{val:'text/plain',label:'TXT'},{val:'text/markdown',label:'MD'}],
-  'text/rtf':    [{val:'text/plain',label:'TXT'}],
+  // Standard images
+  'image/jpeg':     [{val:'image/png',label:'PNG'},{val:'image/webp',label:'WEBP'},{val:'image/bmp',label:'BMP'},{val:'image/gif',label:'GIF'},{val:'application/pdf',label:'PDF'}],
+  'image/png':      [{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'},{val:'image/gif',label:'GIF'},{val:'image/bmp',label:'BMP'},{val:'application/pdf',label:'PDF'}],
+  'image/webp':     [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/gif',label:'GIF'},{val:'application/pdf',label:'PDF'}],
+  'image/gif':      [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
+  'image/bmp':      [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'},{val:'application/pdf',label:'PDF'}],
+  'image/tiff':     [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'},{val:'application/pdf',label:'PDF'}],
+  'image/svg+xml':  [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'application/pdf',label:'PDF'}],
+  'image/x-icon':   [{val:'image/png',label:'PNG'}],
+  'image/avif':     [{val:'image/png',label:'PNG'},{val:'image/jpeg',label:'JPG'},{val:'image/webp',label:'WEBP'}],
+  // PDF
+  'application/pdf':[{val:'image/png',label:'PNG (pages)'},{val:'image/jpeg',label:'JPG (pages)'},{val:'image/webp',label:'WEBP (pages)'},{val:'text/plain',label:'TXT (extract)'}],
+  // Data
+  'text/plain':     [{val:'application/json',label:'JSON'},{val:'text/markdown',label:'MD'},{val:'application/pdf',label:'PDF'},{val:'text/plain',label:'TXT'}],
+  'text/csv':       [{val:'application/json',label:'JSON'},{val:'text/tab-separated-values',label:'TSV'},{val:'text/xml',label:'XML'},{val:'text/plain',label:'TXT'}],
+  'application/json':[{val:'text/csv',label:'CSV'},{val:'text/yaml',label:'YAML'},{val:'text/xml',label:'XML'},{val:'text/plain',label:'TXT'}],
+  'text/xml':       [{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
+  'application/xml':[{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
+  'text/yaml':      [{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
+  'text/tab-separated-values':[{val:'text/csv',label:'CSV'},{val:'application/json',label:'JSON'},{val:'text/plain',label:'TXT'}],
+  'text/x-ini':     [{val:'application/json',label:'JSON'}],
+  'text/markdown':  [{val:'text/html',label:'HTML'},{val:'application/pdf',label:'PDF'}],
+  'text/html':      [{val:'text/plain',label:'TXT'},{val:'text/markdown',label:'MD'},{val:'application/pdf',label:'PDF'}],
+  'text/rtf':       [{val:'text/plain',label:'TXT'}],
 };
 RAW_EXTS.forEach(ext => { FORMAT_OPTIONS['image/x-raw-'+ext] = [...RASTER]; });
 
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 //  STATE & DOM
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 let files = [];
-let rawReady = false, rawLoading_ = false, rawCallbacks = [];
+// Library loading state
+const libState = { raw: false, rawLoading: false, rawCbs: [], pdf: false, pdfLoading: false, pdfCbs: [], jspdf: false, jspdfLoading: false, jspdfCbs: [] };
 
-const dropzone      = document.getElementById('dropzone');
-const fileInput     = document.getElementById('file-input');
-const fileListEl    = document.getElementById('file-list');
-const actionsEl     = document.getElementById('actions');
-const btnConvert    = document.getElementById('btn-convert');
-const btnClear      = document.getElementById('btn-clear');
-const logEl         = document.getElementById('log');
-const rawNotice     = document.getElementById('raw-notice');
-const rawLoadingEl  = document.getElementById('raw-loading');
-const rawLoadingTxt = document.getElementById('raw-loading-text');
+const $drop     = document.getElementById('dropzone');
+const $input    = document.getElementById('file-input');
+const $list     = document.getElementById('file-list');
+const $actions  = document.getElementById('actions');
+const $convert  = document.getElementById('btn-convert');
+const $clear    = document.getElementById('btn-clear');
+const $log      = document.getElementById('log');
+const $rawNote  = document.getElementById('raw-notice');
+const $pdfNote  = document.getElementById('pdf-notice');
+const $loading  = document.getElementById('lib-loading');
+const $loadTxt  = document.getElementById('lib-loading-text');
 
-dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragging'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragging'));
-dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragging'); addFiles([...e.dataTransfer.files]); });
-fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value=''; });
-btnClear.addEventListener('click', clearAll);
-btnConvert.addEventListener('click', convertAll);
+$drop.addEventListener('dragover', e => { e.preventDefault(); $drop.classList.add('dragging'); });
+$drop.addEventListener('dragleave', () => $drop.classList.remove('dragging'));
+$drop.addEventListener('drop', e => { e.preventDefault(); $drop.classList.remove('dragging'); addFiles([...e.dataTransfer.files]); });
+$input.addEventListener('change', () => { addFiles([...$input.files]); $input.value=''; });
+$clear.addEventListener('click', clearAll);
+$convert.addEventListener('click', convertAll);
 
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 //  FILE MANAGEMENT
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 function addFiles(newFiles) {
-  let hasRaw = false;
+  let hasRaw = false, hasPdf = false;
   newFiles.forEach(f => {
     const mime = getMime(f);
     const opts = FORMAT_OPTIONS[mime];
-    if (!opts) { setLog('Toetamata formaat: ' + f.name, 'err'); return; }
-    const id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
-    files.push({ file: f, id, mime, targetMime: opts[0].val });
-    renderCard(files[files.length-1], opts);
+    if (!opts) { setLog('Unsupported format: ' + f.name, 'err'); return; }
+    const id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    const item = { file: f, id, mime, targetMime: opts[0].val, pdfScale: 2.0, pdfFormat: 'a4' };
+    files.push(item);
+    renderCard(item, opts);
     if (isRaw(mime)) hasRaw = true;
+    if (isPdf(mime)) hasPdf = true;
   });
-  if (hasRaw) rawNotice.style.display = 'block';
+  if (hasRaw) $rawNote.style.display = 'block';
+  if (hasPdf) $pdfNote.style.display = 'block';
   updateActions();
 }
 
 function tagInfo(mime) {
-  if (isRaw(mime)) return ['RAW', 'tag-raw'];
-  if (mime.startsWith('image/')) return ['IMG', 'tag-img'];
-  if (mime === 'application/json' || mime === 'text/csv' || mime === 'text/yaml' || mime === 'text/tab-separated-values' || mime === 'text/x-ini' || mime.includes('xml')) return ['DATA', 'tag-data'];
-  return ['TXT', 'tag-txt'];
+  if (isRaw(mime))               return ['RAW',  'tag-raw'];
+  if (isPdf(mime))               return ['PDF',  'tag-pdf'];
+  if (mime.startsWith('image/')) return ['IMG',  'tag-img'];
+  if (['application/json','text/csv','text/yaml','text/tab-separated-values','text/x-ini','text/xml','application/xml'].includes(mime)) return ['DATA','tag-data'];
+  return ['TXT','tag-txt'];
 }
 
 function renderCard(item, opts) {
   const card = document.createElement('div');
   card.className = 'file-card'; card.dataset.id = item.id;
-  const sz = item.file.size < 1024*1024 ? (item.file.size/1024).toFixed(1)+' KB' : (item.file.size/1024/1024).toFixed(2)+' MB';
+  const sz = item.file.size < 1048576 ? (item.file.size/1024).toFixed(1)+' KB' : (item.file.size/1048576).toFixed(2)+' MB';
   const [tlabel, tcls] = tagInfo(item.mime);
   const selHtml = opts.map(o => `<option value="${o.val}"${o.val===item.targetMime?' selected':''}>${o.label}</option>`).join('');
+
+  // PDF options panel (shown when source is PDF or target is PDF)
+  const showPdfOpts = isPdf(item.mime) || item.targetMime === 'application/pdf';
+
   card.innerHTML = `
     <div class="file-info">
       <div class="file-name"><span class="file-name-text">${esc(item.file.name)}</span><span class="file-tag ${tcls}">${tlabel}</span></div>
       <div class="file-meta">${sz}</div>
     </div>
     <select class="format-select">${selHtml}</select>
-    <button class="btn-remove">×</button>
+    <button class="btn-remove" title="Remove">×</button>
+    <div class="pdf-opts${showPdfOpts?' show':''}">
+      ${isPdf(item.mime) ? `
+        <label>Scale:
+          <select class="pdf-scale-sel">
+            <option value="1">1× (fast)</option>
+            <option value="2" selected>2× (default)</option>
+            <option value="3">3× (high res)</option>
+          </select>
+        </label>` : `
+        <label>Page size:
+          <select class="pdf-fmt-sel">
+            <option value="a4" selected>A4</option>
+            <option value="letter">Letter</option>
+            <option value="a3">A3</option>
+          </select>
+        </label>`}
+    </div>
     <div class="file-err"></div>
     <div class="file-status"><div class="file-status-bar"></div></div>
   `;
-  card.querySelector('select').addEventListener('change', e => { item.targetMime = e.target.value; });
+
+  const sel = card.querySelector('.format-select');
+  sel.addEventListener('change', e => {
+    item.targetMime = e.target.value;
+    const pdfOpts = card.querySelector('.pdf-opts');
+    pdfOpts.classList.toggle('show', isPdf(item.mime) || item.targetMime === 'application/pdf');
+  });
+
+  const scaleEl = card.querySelector('.pdf-scale-sel');
+  if (scaleEl) scaleEl.addEventListener('change', e => { item.pdfScale = parseFloat(e.target.value); });
+  const fmtEl = card.querySelector('.pdf-fmt-sel');
+  if (fmtEl) fmtEl.addEventListener('change', e => { item.pdfFormat = e.target.value; });
   card.querySelector('.btn-remove').addEventListener('click', () => removeFile(item.id));
-  fileListEl.appendChild(card);
+  $list.appendChild(card);
 }
 
-function removeFile(id) { files = files.filter(f=>f.id!==id); fileListEl.querySelector(`[data-id="${id}"]`)?.remove(); updateActions(); }
-function clearAll() { files=[]; fileListEl.innerHTML=''; rawNotice.style.display='none'; updateActions(); setLog(''); }
-function updateActions() { actionsEl.style.display = files.length ? 'flex' : 'none'; }
-function setLog(m,c='') { logEl.innerHTML = m ? `<span class="${c}">${esc(m)}</span>` : ''; }
+function removeFile(id) { files = files.filter(f=>f.id!==id); $list.querySelector(`[data-id="${id}"]`)?.remove(); updateActions(); }
+function clearAll() { files=[]; $list.innerHTML=''; $rawNote.style.display='none'; $pdfNote.style.display='none'; updateActions(); setLog(''); }
+function updateActions() { $actions.style.display = files.length?'flex':'none'; }
+function setLog(m,c='') { $log.innerHTML = m?`<span class="${c}">${esc(m)}</span>`:''; }
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 const delay = ms => new Promise(r=>setTimeout(r,ms));
 
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 //  CONVERT ALL
-// ══════════════════════════════════════════════════════════════
+// ─────────────────────────────────────────────
 async function convertAll() {
   if (!files.length) return;
-  btnConvert.disabled = true; setLog('Konverteerin...','');
+  $convert.disabled = true; setLog('Converting...','');
   let ok=0, fail=0;
+
   for (const item of files) {
-    const card = fileListEl.querySelector(`[data-id="${item.id}"]`);
+    const card = $list.querySelector(`[data-id="${item.id}"]`);
     const statusEl = card?.querySelector('.file-status');
     const bar = card?.querySelector('.file-status-bar');
     const errEl = card?.querySelector('.file-err');
     statusEl?.classList.add('active');
-    if (bar) { bar.style.background='var(--accent)'; bar.style.width='40%'; }
+    if (errEl) { errEl.textContent=''; errEl.classList.remove('show'); }
+    if (bar) { bar.style.background='var(--accent)'; bar.style.width='35%'; }
+
     try {
-      const blob = await convert(item.file, item.mime, item.targetMime);
+      const results = await convert(item); // may return array of blobs (PDF pages)
       if (bar) bar.style.width = '100%';
-      const ext = MIME_TO_EXT[item.targetMime] || 'bin';
-      download(blob, item.file.name.replace(/\.[^.]+$/,'') + '.' + ext);
+
+      const baseName = item.file.name.replace(/\.[^.]+$/,'');
+      if (Array.isArray(results)) {
+        results.forEach((blob, i) => {
+          const ext = MIME_TO_EXT[blob.type] || 'bin';
+          download(blob, results.length===1 ? `${baseName}.${ext}` : `${baseName}_p${i+1}.${ext}`);
+        });
+      } else {
+        const ext = MIME_TO_EXT[item.targetMime] || 'bin';
+        download(results, `${baseName}.${ext}`);
+      }
       ok++;
     } catch(e) {
       fail++; console.error(item.file.name, e);
-      if (bar) { bar.style.background='#ff5a5a'; bar.style.width='100%'; }
-      if (errEl) { errEl.textContent = '✗ ' + e.message; errEl.classList.add('show'); }
+      if (bar) { bar.style.background='var(--red)'; bar.style.width='100%'; }
+      if (errEl) { errEl.textContent='✗ '+e.message; errEl.classList.add('show'); }
     }
-    await delay(80);
+    await delay(100);
   }
-  btnConvert.disabled = false;
-  if (!fail) setLog(`✓ ${ok} fail${ok===1?'':'i'} konverteeritud`, 'ok');
-  else setLog(`${ok} õnnestus · ${fail} ebaõnnestus`, 'err');
+
+  $convert.disabled = false;
+  if (!fail) setLog(`✓ ${ok} file${ok===1?'':'s'} converted`, 'ok');
+  else setLog(`${ok} succeeded · ${fail} failed`, 'err');
 }
 
 function download(blob, name) {
   const url = URL.createObjectURL(blob);
-  const a = Object.assign(document.createElement('a'), {href:url, download:name});
+  const a = Object.assign(document.createElement('a'),{href:url,download:name});
   document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 4000);
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},5000);
 }
 
-// ══════════════════════════════════════════════════════════════
-//  ROUTER
-// ══════════════════════════════════════════════════════════════
-async function convert(file, from, to) {
-  if (isRaw(from)) return convertRaw(file, to);
+// ─────────────────────────────────────────────
+//  MAIN ROUTER
+// ─────────────────────────────────────────────
+async function convert(item) {
+  const { file, mime: from, targetMime: to } = item;
+
+  // RAW
+  if (isRaw(from)) return [await convertRaw(file, to)];
+
+  // PDF source
+  if (isPdf(from)) {
+    if (to === 'text/plain') return [await pdfToText(file)];
+    return pdfToImages(file, to, item.pdfScale); // returns array
+  }
+
+  // → PDF target
+  if (to === 'application/pdf') {
+    if (from.startsWith('image/') || from === 'image/svg+xml') return [await imageToPdf(file, from, item.pdfFormat)];
+    if (from === 'text/plain') return [await textToPdf(file, item.pdfFormat)];
+    if (from === 'text/markdown') return [await mdToPdf(file, item.pdfFormat)];
+    if (from === 'text/html') return [await htmlToPdf(file, item.pdfFormat)];
+    throw new Error('Cannot convert this format to PDF');
+  }
+
+  // Standard image → image
   const raster = new Set(['image/jpeg','image/png','image/webp','image/gif','image/bmp','image/tiff','image/avif','image/x-icon']);
-  if (raster.has(from)) return canvasConvert(file, to);
-  if (from === 'image/svg+xml') return svgConvert(file, to);
-  // Data routes
+  if (raster.has(from)) return [await canvasConvert(file, to)];
+  if (from==='image/svg+xml') return [await svgConvert(file, to)];
+
+  // Data conversions
   if (from==='text/csv') {
-    if (to==='application/json') return csvToJson(file);
-    if (to==='text/tab-separated-values') return csvToTsv(file);
-    if (to==='text/xml') return csvToXml(file);
-    const t = await file.text(); return new Blob([t],{type:to});
+    if (to==='application/json') return [await csvToJson(file)];
+    if (to==='text/tab-separated-values') return [await csvToTsv(file)];
+    if (to==='text/xml') return [await csvToXml(file)];
+    return [new Blob([await file.text()],{type:to})];
   }
   if (from==='application/json') {
-    if (to==='text/csv') return jsonToCsv(file);
-    if (to==='text/yaml') return jsonToYaml(file);
-    if (to==='text/xml') return jsonToXml(file);
-    const t = await file.text(); return new Blob([t],{type:to});
+    if (to==='text/csv') return [await jsonToCsv(file)];
+    if (to==='text/yaml') return [await jsonToYaml(file)];
+    if (to==='text/xml') return [await jsonToXml(file)];
+    return [new Blob([await file.text()],{type:to})];
   }
-  if ((from==='text/xml'||from==='application/xml') && to==='application/json') return xmlToJson(file);
-  if (from==='text/yaml' && to==='application/json') return yamlToJson(file);
+  if ((from==='text/xml'||from==='application/xml')&&to==='application/json') return [await xmlToJson(file)];
+  if (from==='text/yaml'&&to==='application/json') return [await yamlToJson(file)];
   if (from==='text/tab-separated-values') {
-    if (to==='text/csv') return tsvToCsv(file);
-    if (to==='application/json') { const c=await tsvToCsv(file); return csvToJson(new File([c],'f.csv',{type:'text/csv'})); }
+    if (to==='text/csv') return [await tsvToCsv(file)];
+    if (to==='application/json') { const c=await tsvToCsv(file); return [await csvToJson(new File([c],'f.csv',{type:'text/csv'}))]; }
   }
-  if (from==='text/x-ini') return iniToJson(file);
-  if (from==='text/markdown'||from==='text/md') return mdToHtml(file);
-  if (from==='text/html' && to==='text/plain') return htmlToTxt(file);
-  if (from==='text/html' && to==='text/markdown') return htmlToMd(file);
-  if (from==='text/rtf') return rtfToTxt(file);
-  if (from==='text/plain' && to==='text/markdown') return txtToMd(file);
-  // Generic text passthrough
-  if (from.startsWith('text/') || from==='application/json') {
-    const t = await file.text(); return new Blob([t],{type:to});
-  }
-  throw new Error('Toetamata konversioon: ' + from + ' → ' + to);
+  if (from==='text/x-ini') return [await iniToJson(file)];
+  if (from==='text/markdown') return [await mdToHtml(file)];
+  if (from==='text/html'&&to==='text/plain') return [await htmlToTxt(file)];
+  if (from==='text/html'&&to==='text/markdown') return [await htmlToMd(file)];
+  if (from==='text/rtf') return [await rtfToTxt(file)];
+  if (from==='text/plain'&&to==='text/markdown') return [new Blob([await file.text()],{type:'text/markdown'})];
+  if (from.startsWith('text/')||from==='application/json') return [new Blob([await file.text()],{type:to})];
+
+  throw new Error('Unsupported conversion: ' + from + ' → ' + to);
 }
 
-// ══════════════════════════════════════════════════════════════
-//  RAW  (dcraw.js WebAssembly)
-// ══════════════════════════════════════════════════════════════
-function ensureRaw() {
-  return new Promise((res,rej) => {
-    if (rawReady) { res(); return; }
-    rawCallbacks.push({res,rej});
-    if (rawLoading_) return;
-    rawLoading_ = true;
-    rawLoadingEl.classList.add('show');
-    rawLoadingTxt.textContent = 'Laadin RAW decoder (dcraw WASM)...';
+// ═══════════════════════════════════════════════════════════════
+//  LIBRARY LOADERS
+// ═══════════════════════════════════════════════════════════════
+function loadScript(src, label) {
+  return new Promise((res, rej) => {
+    showLoading(label);
     const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/dcraw/dcraw.js';
-    s.onload = () => {
-      rawLoadingTxt.textContent = 'Initsialiseerin...';
-      // Give dcraw.js a moment to set up
-      setTimeout(() => {
-        if (typeof dcraw !== 'undefined') {
-          rawReady = true;
-          rawLoadingEl.classList.remove('show');
-          rawCallbacks.forEach(c=>c.res());
-        } else {
-          rawLoadingEl.classList.remove('show');
-          rawCallbacks.forEach(c=>c.rej(new Error('dcraw.js ei käivitu')));
-        }
-        rawCallbacks = [];
-      }, 500);
-    };
-    s.onerror = () => {
-      rawLoadingEl.classList.remove('show');
-      rawCallbacks.forEach(c=>c.rej(new Error('RAW decoder laadimine ebaõnnestus — kontrolli internetiühendust')));
-      rawCallbacks = [];
-    };
+    s.src = src;
+    s.onload = () => { hideLoading(); res(); };
+    s.onerror = () => { hideLoading(); rej(new Error('Failed to load ' + label + ' — check internet connection')); };
     document.head.appendChild(s);
   });
 }
 
-async function convertRaw(file, toMime) {
-  await ensureRaw();
-  rawLoadingEl.classList.add('show');
-  rawLoadingTxt.textContent = 'Dekodeerin ' + file.name + '...';
-  try {
-    const buf = await file.arrayBuffer();
-    const u8 = new Uint8Array(buf);
-    // dcraw args: -c (stdout), -w (camera WB), +M (use embedded matrix), -T (TIFF output), -6 (16-bit if possible)
-    const result = dcraw(u8, ['-c','-w','+M','-T']);
-    rawLoadingEl.classList.remove('show');
-    if (!result || result.length === 0) throw new Error('RAW decode andis tühja tulemuse — fail võib olla rikutud');
-    // result is TIFF bytes → load via blob URL → canvas → target format
-    const tiffBlob = new Blob([result], {type:'image/tiff'});
-    return canvasConvert(new File([tiffBlob],'raw_decoded.tiff',{type:'image/tiff'}), toMime);
-  } catch(e) {
-    rawLoadingEl.classList.remove('show');
-    throw e;
-  }
+function showLoading(txt) { $loadTxt.textContent = txt; $loading.classList.add('show'); }
+function hideLoading() { $loading.classList.remove('show'); }
+
+function ensureLib(key, src, label, check) {
+  return new Promise((res, rej) => {
+    if (libState[key]) { res(); return; }
+    libState[key+'Cbs'].push({res,rej});
+    if (libState[key+'Loading']) return;
+    libState[key+'Loading'] = true;
+    loadScript(src, label).then(() => {
+      return new Promise(r => setTimeout(r, 400)); // settle
+    }).then(() => {
+      if (check()) {
+        libState[key] = true;
+        libState[key+'Cbs'].forEach(c=>c.res());
+      } else {
+        const err = new Error(label + ' failed to initialize');
+        libState[key+'Cbs'].forEach(c=>c.rej(err));
+      }
+      libState[key+'Cbs'] = [];
+    }).catch(e => {
+      libState[key+'Cbs'].forEach(c=>c.rej(e));
+      libState[key+'Cbs'] = [];
+    });
+  });
 }
 
-// ══════════════════════════════════════════════════════════════
+const ensureRawLib  = () => ensureLib('raw',   'https://cdn.jsdelivr.net/npm/dcraw/dcraw.js',            'Loading RAW decoder (dcraw WASM)...',  () => typeof dcraw !== 'undefined');
+const ensurePdfLib  = () => ensureLib('pdf',   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', 'Loading PDF.js...',            () => typeof pdfjsLib !== 'undefined');
+const ensureJsPdf   = () => ensureLib('jspdf', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'Loading jsPDF...',          () => typeof jspdf !== 'undefined' || typeof window.jspdf !== 'undefined');
+
+// ═══════════════════════════════════════════════════════════════
+//  RAW CONVERTER
+// ═══════════════════════════════════════════════════════════════
+async function convertRaw(file, toMime) {
+  await ensureRawLib();
+  showLoading('Decoding ' + file.name + '...');
+  try {
+    const u8 = new Uint8Array(await file.arrayBuffer());
+    const result = dcraw(u8, ['-c','-w','+M','-T']);
+    hideLoading();
+    if (!result || result.length===0) throw new Error('RAW decode returned empty result');
+    const tiffBlob = new Blob([result],{type:'image/tiff'});
+    return canvasConvert(new File([tiffBlob],'raw.tiff',{type:'image/tiff'}), toMime);
+  } catch(e) { hideLoading(); throw e; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PDF CONVERTERS
+// ═══════════════════════════════════════════════════════════════
+
+// PDF → images (one blob per page)
+async function pdfToImages(file, toMime, scale=2) {
+  await ensurePdfLib();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  showLoading('Reading PDF...');
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    const blobs = [];
+    for (let p=1; p<=pdf.numPages; p++) {
+      showLoading(`Rendering page ${p} of ${pdf.numPages}...`);
+      const page = await pdf.getPage(p);
+      const vp = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      const ctx = canvas.getContext('2d');
+      if (toMime==='image/jpeg') { ctx.fillStyle='#fff'; ctx.fillRect(0,0,vp.width,vp.height); }
+      await page.render({canvasContext:ctx, viewport:vp}).promise;
+      const blob = await new Promise((res,rej) => {
+        canvas.toBlob(b => b?res(b):rej(new Error('toBlob failed')), toMime, 0.92);
+      });
+      blobs.push(blob);
+    }
+    hideLoading();
+    return blobs;
+  } catch(e) { hideLoading(); throw e; }
+}
+
+// PDF → plain text
+async function pdfToText(file) {
+  await ensurePdfLib();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  showLoading('Extracting text from PDF...');
+  try {
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    let text = '';
+    for (let p=1; p<=pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(i=>i.str).join(' ');
+      text += `--- Page ${p} ---\n${pageText}\n\n`;
+    }
+    hideLoading();
+    return new Blob([text.trim()], {type:'text/plain'});
+  } catch(e) { hideLoading(); throw e; }
+}
+
+// Image → PDF
+async function imageToPdf(file, fromMime, fmt='a4') {
+  await ensureJsPdf();
+  const jsPDF = (window.jspdf||jspdf).jsPDF;
+
+  // Draw image to canvas first to get dimensions
+  const blob = fromMime==='image/svg+xml' ? await svgConvert(file,'image/png') : await canvasConvert(file,'image/png');
+  const imgUrl = URL.createObjectURL(blob);
+  const img = await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=imgUrl; });
+
+  const iW = img.naturalWidth, iH = img.naturalHeight;
+  const landscape = iW > iH;
+  const doc = new jsPDF({ orientation: landscape?'l':'p', unit:'px', format: fmt });
+  const pW = doc.internal.pageSize.getWidth();
+  const pH = doc.internal.pageSize.getHeight();
+
+  // Fit image
+  const ratio = Math.min(pW/iW, pH/iH);
+  const dW = iW*ratio, dH = iH*ratio;
+  const xOff = (pW-dW)/2, yOff = (pH-dH)/2;
+
+  // Convert blob to base64
+  const b64 = await blobToB64(blob);
+  doc.addImage(b64, 'PNG', xOff, yOff, dW, dH);
+  URL.revokeObjectURL(imgUrl);
+  return new Blob([doc.output('arraybuffer')], {type:'application/pdf'});
+}
+
+// Text → PDF
+async function textToPdf(file, fmt='a4') {
+  await ensureJsPdf();
+  const jsPDF = (window.jspdf||jspdf).jsPDF;
+  const text = await file.text();
+  const doc = new jsPDF({unit:'pt', format: fmt});
+  const margin = 40, lineHeight = 14, pageH = doc.internal.pageSize.getHeight();
+  const maxW = doc.internal.pageSize.getWidth() - margin*2;
+  doc.setFontSize(11);
+  const lines = doc.splitTextToSize(text, maxW);
+  let y = margin;
+  lines.forEach(line => {
+    if (y + lineHeight > pageH - margin) { doc.addPage(); y = margin; }
+    doc.text(line, margin, y);
+    y += lineHeight;
+  });
+  return new Blob([doc.output('arraybuffer')], {type:'application/pdf'});
+}
+
+// Markdown → PDF (via HTML render)
+async function mdToPdf(file, fmt='a4') {
+  const htmlBlob = await mdToHtml(file);
+  return htmlToPdf(new File([htmlBlob],'doc.html',{type:'text/html'}), fmt);
+}
+
+// HTML → PDF
+async function htmlToPdf(file, fmt='a4') {
+  await ensureJsPdf();
+  const jsPDF = (window.jspdf||jspdf).jsPDF;
+  const html = await file.text();
+  // Render HTML to canvas via iframe
+  return new Promise((res, rej) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
+    document.body.appendChild(iframe);
+    iframe.onload = async () => {
+      try {
+        await delay(300); // let styles paint
+        const canvas = document.createElement('canvas');
+        const w = 794, h = iframe.contentDocument.body.scrollHeight || 1123;
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h);
+        // fallback: just use text content
+        const txt = iframe.contentDocument.body.innerText||'';
+        document.body.removeChild(iframe);
+        const doc = new jsPDF({unit:'pt', format: fmt});
+        const margin=40, lh=14, maxW=doc.internal.pageSize.getWidth()-margin*2, pH=doc.internal.pageSize.getHeight();
+        doc.setFontSize(11);
+        const lines = doc.splitTextToSize(txt, maxW);
+        let y=margin;
+        lines.forEach(line=>{if(y+lh>pH-margin){doc.addPage();y=margin;}doc.text(line,margin,y);y+=lh;});
+        res(new Blob([doc.output('arraybuffer')],{type:'application/pdf'}));
+      } catch(e) { document.body.removeChild(iframe); rej(e); }
+    };
+    iframe.srcdoc = html;
+  });
+}
+
+function blobToB64(blob) {
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  IMAGE CONVERTERS
-// ══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function canvasConvert(file, toMime) {
-  return new Promise((res,rej) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const w = img.naturalWidth||img.width, h = img.naturalHeight||img.height;
-      const cv = document.createElement('canvas'); cv.width=w; cv.height=h;
-      const ctx = cv.getContext('2d');
-      if (toMime==='image/jpeg'||toMime==='image/bmp') { ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); }
+  return new Promise((res,rej)=>{
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      const ctx=cv.getContext('2d');
+      if(toMime==='image/jpeg'||toMime==='image/bmp'){ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);}
       ctx.drawImage(img,0,0);
       URL.revokeObjectURL(url);
-      const q = toMime==='image/jpeg'?0.92:toMime==='image/webp'?0.90:undefined;
-      cv.toBlob(b => b?res(b):rej(new Error('Canvas toBlob ebaõnnestus')), toMime, q);
+      const q=toMime==='image/jpeg'?0.92:toMime==='image/webp'?0.90:undefined;
+      cv.toBlob(b=>b?res(b):rej(new Error('Canvas toBlob failed')),toMime,q);
     };
-    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Pildi laadimine ebaõnnestus — brauser ei toeta seda formaati')); };
-    img.src = url;
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('Image load failed — format may not be supported by this browser'));};
+    img.src=url;
   });
 }
 
 function svgConvert(file, toMime) {
-  return new Promise((res,rej) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const txt = e.target.result;
-      const doc = new DOMParser().parseFromString(txt,'image/svg+xml');
-      const svgEl = doc.querySelector('svg');
-      const vb = svgEl?.getAttribute('viewBox')?.split(/\s+/);
-      const w = parseFloat(svgEl?.getAttribute('width')||'0') || (vb?parseFloat(vb[2]):0) || 800;
-      const h = parseFloat(svgEl?.getAttribute('height')||'0') || (vb?parseFloat(vb[3]):0) || 600;
-      const blob = new Blob([txt],{type:'image/svg+xml'});
-      const url = URL.createObjectURL(blob);
-      const img = new Image();
-      img.onload = () => {
-        const cv = document.createElement('canvas'); cv.width=w; cv.height=h;
-        const ctx = cv.getContext('2d');
-        if (toMime==='image/jpeg') { ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); }
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const txt=e.target.result;
+      const doc=new DOMParser().parseFromString(txt,'image/svg+xml');
+      const svgEl=doc.querySelector('svg');
+      const vb=svgEl?.getAttribute('viewBox')?.split(/\s+/);
+      const w=parseFloat(svgEl?.getAttribute('width')||'0')||(vb?parseFloat(vb[2]):0)||800;
+      const h=parseFloat(svgEl?.getAttribute('height')||'0')||(vb?parseFloat(vb[3]):0)||600;
+      const blob=new Blob([txt],{type:'image/svg+xml'});
+      const url=URL.createObjectURL(blob);
+      const img=new Image();
+      img.onload=()=>{
+        const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        const ctx=cv.getContext('2d');
+        if(toMime==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);}
         ctx.drawImage(img,0,0,w,h);
         URL.revokeObjectURL(url);
-        cv.toBlob(b => b?res(b):rej(new Error('SVG toBlob failed')), toMime, 0.92);
+        cv.toBlob(b=>b?res(b):rej(new Error('SVG render failed')),toMime,0.92);
       };
-      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('SVG render ebaõnnestus')); };
-      img.src = url;
+      img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('SVG render failed'));};
+      img.src=url;
     };
-    reader.onerror = rej;
+    reader.onerror=rej;
     reader.readAsText(file);
   });
 }
 
-// ══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  DATA CONVERTERS
-// ══════════════════════════════════════════════════════════════
-function csvParseLine(line, sep=',') {
-  const r=[]; let cur='', inQ=false;
-  for (let i=0;i<line.length;i++) {
-    const c=line[i];
-    if (c==='"') { if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
-    else if(c===sep&&!inQ){r.push(cur.trim());cur='';}
-    else cur+=c;
-  }
-  r.push(cur.trim()); return r;
-}
-function csvEsc(v,sep=','){const s=String(v??'');return(s.includes(sep)||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:s;}
-async function parseCsv(file,sep=','){
-  const txt=await file.text();
-  const lines=txt.trim().split(/\r?\n/).filter(Boolean);
-  const headers=csvParseLine(lines[0],sep);
-  const rows=lines.slice(1).map(l=>{const vals=csvParseLine(l,sep);const o={};headers.forEach((h,i)=>o[h]=vals[i]??'');return o;});
-  return{headers,rows};
-}
+// ═══════════════════════════════════════════════════════════════
+function csvParseLine(line,sep=','){const r=[];let cur='',inQ=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===sep&&!inQ){r.push(cur.trim());cur='';}else cur+=c;}r.push(cur.trim());return r;}
+function csvEsc(v,sep=','){const s=String(v??'');return(s.includes(sep)||s.includes('"')||s.includes('\n'))?`"${s.replace(/"/g,'""')}"`:''+s;}
+async function parseCsv(file,sep=','){const txt=await file.text();const lines=txt.trim().split(/\r?\n/).filter(Boolean);const headers=csvParseLine(lines[0],sep);const rows=lines.slice(1).map(l=>{const vals=csvParseLine(l,sep);const o={};headers.forEach((h,i)=>o[h]=vals[i]??'');return o;});return{headers,rows};}
 async function csvToJson(f){const{rows}=await parseCsv(f);return new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});}
-async function csvToTsv(f){
-  const{headers,rows}=await parseCsv(f);
-  const lines=[headers.map(h=>csvEsc(h,'\t')).join('\t'),...rows.map(r=>headers.map(h=>csvEsc(r[h],'\t')).join('\t'))];
-  return new Blob([lines.join('\r\n')],{type:'text/tab-separated-values'});
-}
-async function csvToXml(f){
-  const{rows}=await parseCsv(f);
-  const body=rows.map(r=>`  <row>\n${Object.entries(r).map(([k,v])=>`    <${safeTag(k)}>${escXml(String(v??''))}</${safeTag(k)}>`).join('\n')}\n  </row>`).join('\n');
-  return new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n<data>\n${body}\n</data>`],{type:'text/xml'});
-}
-async function jsonToCsv(f){
-  const txt=await f.text();const data=JSON.parse(txt);const arr=Array.isArray(data)?data:[data];
-  if(!arr.length)return new Blob([''],{type:'text/csv'});
-  const keys=Object.keys(arr[0]);
-  const csv=[keys.map(k=>csvEsc(k)).join(','),...arr.map(r=>keys.map(k=>csvEsc(r[k])).join(','))].join('\r\n');
-  return new Blob([csv],{type:'text/csv'});
-}
-async function tsvToCsv(f){
-  const txt=await f.text();
-  const lines=txt.trim().split(/\r?\n/).map(l=>csvParseLine(l,'\t').map(v=>csvEsc(v)).join(','));
-  return new Blob([lines.join('\r\n')],{type:'text/csv'});
-}
-async function jsonToYaml(f){const txt=await f.text();return new Blob([toYaml(JSON.parse(txt),0)],{type:'text/yaml'});}
-function toYaml(val,indent){
-  const p=' '.repeat(indent);
-  if(val===null)return'null';
-  if(typeof val==='boolean'||typeof val==='number')return String(val);
-  if(typeof val==='string'){if(/[\n:{}[\],&*#?|<>=!%@`]/.test(val)||val.trim()!==val)return JSON.stringify(val);return val;}
-  if(Array.isArray(val)){if(!val.length)return'[]';return val.map(v=>`${p}- ${toYaml(v,indent+2)}`).join('\n');}
-  if(typeof val==='object'){const keys=Object.keys(val);if(!keys.length)return'{}';return keys.map(k=>{const v=val[k];const rendered=toYaml(v,indent+2);if(typeof v==='object'&&v!==null&&!Array.isArray(v)&&Object.keys(v).length>0)return`${p}${k}:\n${rendered}`;if(Array.isArray(v)&&v.length>0&&typeof v[0]==='object')return`${p}${k}:\n${rendered}`;return`${p}${k}: ${rendered}`;}).join('\n');}
-  return String(val);
-}
-async function yamlToJson(f){const txt=await f.text();return new Blob([JSON.stringify(simpleYamlParse(txt),null,2)],{type:'application/json'});}
+async function csvToTsv(f){const{headers,rows}=await parseCsv(f);return new Blob([[headers.map(h=>csvEsc(h,'\t')).join('\t'),...rows.map(r=>headers.map(h=>csvEsc(r[h],'\t')).join('\t'))].join('\r\n')],{type:'text/tab-separated-values'});}
+async function csvToXml(f){const{rows}=await parseCsv(f);const body=rows.map(r=>`  <row>\n${Object.entries(r).map(([k,v])=>`    <${safeTag(k)}>${escXml(String(v??''))}</${safeTag(k)}>`).join('\n')}\n  </row>`).join('\n');return new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n<data>\n${body}\n</data>`],{type:'text/xml'});}
+async function jsonToCsv(f){const data=JSON.parse(await f.text());const arr=Array.isArray(data)?data:[data];if(!arr.length)return new Blob([''],{type:'text/csv'});const keys=Object.keys(arr[0]);return new Blob([[keys.map(k=>csvEsc(k)).join(','),...arr.map(r=>keys.map(k=>csvEsc(r[k])).join(','))].join('\r\n')],{type:'text/csv'});}
+async function tsvToCsv(f){const txt=await f.text();return new Blob([txt.trim().split(/\r?\n/).map(l=>csvParseLine(l,'\t').map(v=>csvEsc(v)).join(',')).join('\r\n')],{type:'text/csv'});}
+async function jsonToYaml(f){return new Blob([toYaml(JSON.parse(await f.text()),0)],{type:'text/yaml'});}
+function toYaml(val,ind){const p=' '.repeat(ind);if(val===null)return'null';if(typeof val==='boolean'||typeof val==='number')return String(val);if(typeof val==='string'){if(/[\n:{}[\],&*#?|<>=!%@`]/.test(val)||val.trim()!==val)return JSON.stringify(val);return val;}if(Array.isArray(val)){if(!val.length)return'[]';return val.map(v=>`${p}- ${toYaml(v,ind+2)}`).join('\n');}if(typeof val==='object'){const keys=Object.keys(val);if(!keys.length)return'{}';return keys.map(k=>{const v=val[k],r=toYaml(v,ind+2);return(typeof v==='object'&&v!==null&&!Array.isArray(v)&&Object.keys(v).length>0)||(Array.isArray(v)&&v.length>0&&typeof v[0]==='object')?`${p}${k}:\n${r}`:`${p}${k}: ${r}`;}).join('\n');}return String(val);}
+async function yamlToJson(f){return new Blob([JSON.stringify(simpleYamlParse(await f.text()),null,2)],{type:'application/json'});}
 function simpleYamlParse(txt){return parseYamlBlock(txt.split('\n'),0,0).val;}
-function parseYamlBlock(lines,start,base){
-  const obj={};let i=start;
-  while(i<lines.length){const line=lines[i];if(line.trim()===''||line.trim().startsWith('#')){i++;continue;}const ind=line.search(/\S/);if(ind<base)break;const m=line.match(/^(\s*)([^:]+):\s*(.*)?$/);if(!m){i++;continue;}const key=m[2].trim(),valRaw=(m[3]||'').trim();if(valRaw){obj[key]=parseScalar(valRaw);i++;}else{const r=parseYamlBlock(lines,i+1,ind+1);obj[key]=r.val;i=r.nextIdx;}}
-  return{val:obj,nextIdx:i};
-}
+function parseYamlBlock(lines,start,base){const obj={};let i=start;while(i<lines.length){const line=lines[i];if(line.trim()===''||line.trim().startsWith('#')){i++;continue;}const ind=line.search(/\S/);if(ind<base)break;const m=line.match(/^(\s*)([^:]+):\s*(.*)?$/);if(!m){i++;continue;}const key=m[2].trim(),valRaw=(m[3]||'').trim();if(valRaw){obj[key]=parseScalar(valRaw);i++;}else{const r=parseYamlBlock(lines,i+1,ind+1);obj[key]=r.val;i=r.nextIdx;}}return{val:obj,nextIdx:i};}
 function parseScalar(s){if(s==='null'||s==='~')return null;if(s==='true')return true;if(s==='false')return false;if(/^-?\d+$/.test(s))return parseInt(s,10);if(/^-?\d*\.\d+$/.test(s))return parseFloat(s);if((s.startsWith('"')&&s.endsWith('"'))||(s.startsWith("'")&&s.endsWith("'")))return s.slice(1,-1);return s;}
-async function jsonToXml(f){const txt=await f.text();const data=JSON.parse(txt);return new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n`+objToXml(data,'root',0)],{type:'text/xml'});}
-function objToXml(val,tag,ind){const p=' '.repeat(ind),t=safeTag(tag);if(val==null)return`${p}<${t}/>\n`;if(typeof val!=='object')return`${p}<${t}>${escXml(String(val))}</${t}>\n`;if(Array.isArray(val))return val.map(v=>objToXml(v,tag,ind)).join('');const ch=Object.entries(val).map(([k,v])=>objToXml(v,k,ind+2)).join('');return`${p}<${t}>\n${ch}${p}</${t}>\n`;}
-async function xmlToJson(f){const txt=await f.text();const doc=new DOMParser().parseFromString(txt,'text/xml');if(doc.querySelector('parsererror'))throw new Error('XML parse viga');return new Blob([JSON.stringify(xmlNodeToObj(doc.documentElement),null,2)],{type:'application/json'});}
-function xmlNodeToObj(node){if(node.nodeType===3)return node.textContent.trim();const children=[...node.childNodes].filter(n=>n.nodeType!==3||n.textContent.trim());if(!children.length)return node.textContent.trim()||null;const obj={};for(const c of node.childNodes){if(c.nodeType!==1)continue;const v=xmlNodeToObj(c);if(obj[c.tagName]!==undefined){if(!Array.isArray(obj[c.tagName]))obj[c.tagName]=[obj[c.tagName]];obj[c.tagName].push(v);}else obj[c.tagName]=v;}return obj;}
-async function iniToJson(f){
-  const txt=await f.text();const obj={};let sec='_';
-  for(const line of txt.split(/\r?\n/)){const t=line.trim();if(!t||t.startsWith(';')||t.startsWith('#'))continue;const sm=t.match(/^\[(.+)\]$/);if(sm){sec=sm[1];obj[sec]=obj[sec]||{};continue;}const kv=t.match(/^([^=]+)=(.*)$/);if(kv){const k=kv[1].trim(),v=parseScalar(kv[2].trim());if(sec==='_')obj[k]=v;else{obj[sec]=obj[sec]||{};obj[sec][k]=v;}}}
-  return new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
-}
+async function jsonToXml(f){const data=JSON.parse(await f.text());return new Blob([`<?xml version="1.0" encoding="UTF-8"?>\n`+objToXml(data,'root',0)],{type:'text/xml'});}
+function objToXml(val,tag,ind){const p=' '.repeat(ind),t=safeTag(tag);if(val==null)return`${p}<${t}/>\n`;if(typeof val!=='object')return`${p}<${t}>${escXml(String(val))}</${t}>\n`;if(Array.isArray(val))return val.map(v=>objToXml(v,tag,ind)).join('');return`${p}<${t}>\n${Object.entries(val).map(([k,v])=>objToXml(v,k,ind+2)).join('')}${p}</${t}>\n`;}
+async function xmlToJson(f){const doc=new DOMParser().parseFromString(await f.text(),'text/xml');if(doc.querySelector('parsererror'))throw new Error('XML parse error');return new Blob([JSON.stringify(xmlNodeToObj(doc.documentElement),null,2)],{type:'application/json'});}
+function xmlNodeToObj(node){if(node.nodeType===3)return node.textContent.trim();const ch=[...node.childNodes].filter(n=>n.nodeType!==3||n.textContent.trim());if(!ch.length)return node.textContent.trim()||null;const obj={};for(const c of node.childNodes){if(c.nodeType!==1)continue;const v=xmlNodeToObj(c);if(obj[c.tagName]!==undefined){if(!Array.isArray(obj[c.tagName]))obj[c.tagName]=[obj[c.tagName]];obj[c.tagName].push(v);}else obj[c.tagName]=v;}return obj;}
+async function iniToJson(f){const obj={};let sec='_';for(const line of(await f.text()).split(/\r?\n/)){const t=line.trim();if(!t||t.startsWith(';')||t.startsWith('#'))continue;const sm=t.match(/^\[(.+)\]$/);if(sm){sec=sm[1];obj[sec]=obj[sec]||{};continue;}const kv=t.match(/^([^=]+)=(.*)$/);if(kv){const k=kv[1].trim(),v=parseScalar(kv[2].trim());if(sec==='_')obj[k]=v;else{obj[sec]=obj[sec]||{};obj[sec][k]=v;}}}return new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});}
 function safeTag(s){return(s.replace(/[^a-zA-Z0-9_\-.]/g,'_').replace(/^[^a-zA-Z_]/,'_'))||'field';}
 function escXml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// ═══════════════════════════════════════════════════════════════
+//  TEXT CONVERTERS
+// ═══════════════════════════════════════════════════════════════
 async function mdToHtml(f){
   const txt=await f.text();
   let h=txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -563,29 +801,21 @@ async function mdToHtml(f){
     .replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2">$1</a>').replace(/^---$/gm,'<hr>')
     .replace(/^\- (.+)$/gm,'<li>$1</li>').replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
     .split(/\n\n+/).map(p=>p.startsWith('<')?p:`<p>${p.replace(/\n/g,'<br>')}</p>`).join('\n');
-  return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dokument</title><style>body{font-family:Georgia,serif;max-width:720px;margin:2.5rem auto;line-height:1.75;color:#1a1a1a}h1,h2,h3{margin:1.5rem 0 0.5rem}code{background:#f4f4f4;padding:.15em .4em;border-radius:3px}blockquote{border-left:3px solid #ccc;padding:0 1rem;color:#555}a{color:#0070f3}</style></head><body>${h}</body></html>`],{type:'text/html'});
+  return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Document</title><style>body{font-family:Georgia,serif;max-width:720px;margin:2.5rem auto;line-height:1.75;color:#1a1a1a}h1,h2,h3{margin:1.5rem 0 0.5rem}code{background:#f4f4f4;padding:.15em .4em;border-radius:3px}blockquote{border-left:3px solid #ccc;padding:0 1rem;color:#555}a{color:#0070f3}</style></head><body>${h}</body></html>`],{type:'text/html'});
 }
 async function htmlToTxt(f){const t=await f.text();const d=new DOMParser().parseFromString(t,'text/html');return new Blob([d.body.innerText||d.body.textContent||''],{type:'text/plain'});}
 async function htmlToMd(f){
   const t=await f.text();
   let md=(new DOMParser().parseFromString(t,'text/html').body.innerHTML||'')
     .replace(/<h([1-6])[^>]*>([\s\S]+?)<\/h\1>/gi,(_,l,c)=>'#'.repeat(+l)+' '+c+'\n\n')
-    .replace(/<strong[^>]*>([\s\S]+?)<\/strong>/gi,'**$1**')
-    .replace(/<em[^>]*>([\s\S]+?)<\/em>/gi,'*$1*')
-    .replace(/<a[^>]+href="([^"]*)"[^>]*>([\s\S]+?)<\/a>/gi,'[$2]($1)')
-    .replace(/<li[^>]*>([\s\S]+?)<\/li>/gi,'- $1\n')
-    .replace(/<br\s*\/?>/gi,'\n').replace(/<p[^>]*>([\s\S]+?)<\/p>/gi,'$1\n\n')
-    .replace(/<[^>]+>/g,'')
+    .replace(/<strong[^>]*>([\s\S]+?)<\/strong>/gi,'**$1**').replace(/<em[^>]*>([\s\S]+?)<\/em>/gi,'*$1*')
+    .replace(/<a[^>]+href="([^"]*)"[^>]*>([\s\S]+?)<\/a>/gi,'[$2]($1)').replace(/<li[^>]*>([\s\S]+?)<\/li>/gi,'- $1\n')
+    .replace(/<br\s*\/?>/gi,'\n').replace(/<p[^>]*>([\s\S]+?)<\/p>/gi,'$1\n\n').replace(/<[^>]+>/g,'')
     .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')
     .replace(/\n{3,}/g,'\n\n').trim();
   return new Blob([md],{type:'text/markdown'});
 }
-async function txtToMd(f){const t=await f.text();return new Blob([t],{type:'text/markdown'});}
-async function rtfToTxt(f){
-  const t=await f.text();
-  const out=t.replace(/\{[^{}]*\}/g,'').replace(/\\[a-z]+\-?\d*\s?/gi,' ').replace(/[{}\\]/g,'').replace(/\s+/g,' ').trim();
-  return new Blob([out],{type:'text/plain'});
-}
+async function rtfToTxt(f){const t=await f.text();return new Blob([t.replace(/\{[^{}]*\}/g,'').replace(/\\[a-z]+\-?\d*\s?/gi,' ').replace(/[{}\\]/g,'').replace(/\s+/g,' ').trim()],{type:'text/plain'});}
 </script>
 </body>
 </html>
